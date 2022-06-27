@@ -148,7 +148,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 									<div class="col-sm-8">
 										<input type="file" name="packageimage" id="packageimage" required>
 									</div>
-								</div>	
+								</div>
 
 								<div class="row">
 			<div class="col-sm-8 col-sm-offset-2">

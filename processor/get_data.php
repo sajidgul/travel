@@ -20,64 +20,64 @@ class get_data{
 
 
 
-function tblusersup(){
-session_start();
-error_reporting(0);
-$fname=$_POST['fname'];
-$mnumber=$_POST['mobilenumber'];
-$email=$_POST['email'];
-$password=md5($_POST['password']);
-$sql="INSERT INTO  tblusers(FullName,MobileNumber,EmailId,Password) VALUES(?,?,?,?)";
-$query = $this->db->prepare($sql);
-// $query->bindParam(':fname',$fname,PDO::PARAM_STR);
-// $query->bindParam(':mnumber',$mnumber,PDO::PARAM_STR);
-// $query->bindParam(':email',$email,PDO::PARAM_STR);
-// $query->bindParam(':password',$password,PDO::PARAM_STR);
-$query->execute(array($fname, $mnumber, $email, $password));
-$lastInsertId = $this->db->lastInsertId();
-if($lastInsertId)
-{
-$_SESSION['msg']="You are Scuccessfully registered. Now you can login ";
-header('location:../thankyou.php');
-}
-else 
-{
-$_SESSION['msg']="Something went wrong. Please try again.";
-header('location:../thankyou.php');
-}
-}
+	function tblusersup(){
+	session_start();
+	error_reporting(0);
+	$fname=$_POST['fname'];
+	$mnumber=$_POST['mobilenumber'];
+	$email=$_POST['email'];
+	$password=md5($_POST['password']);
+	$sql="INSERT INTO  tblusers(FullName,MobileNumber,EmailId,Password) VALUES(?,?,?,?)";
+	$query = $this->db->prepare($sql);
+	// $query->bindParam(':fname',$fname,PDO::PARAM_STR);
+	// $query->bindParam(':mnumber',$mnumber,PDO::PARAM_STR);
+	// $query->bindParam(':email',$email,PDO::PARAM_STR);
+	// $query->bindParam(':password',$password,PDO::PARAM_STR);
+	$query->execute(array($fname, $mnumber, $email, $password));
+	$lastInsertId = $this->db->lastInsertId();
+	if($lastInsertId)
+	{
+	$_SESSION['msg']="You are Scuccessfully registered. Now you can login ";
+	header('location:../thankyou.php');
+	}
+	else 
+	{
+	$_SESSION['msg']="Something went wrong. Please try again.";
+	header('location:../thankyou.php');
+	}
+	}
 
 
-function tblusers() {
-session_start();
+	function tblusers() {
+	session_start();
 
-$email=$_POST['email'];
-$password=md5($_POST['password']);
-if(empty($email) || empty($password)){
-	return "Please, Enter email and password";
-			}
-$sql ="SELECT id, FullName, EmailId, Password FROM tblusers WHERE EmailId=? AND Password=?";
-$query= $this->db->prepare($sql);
-// $query-> bindParam(':fname', $name, PDO::PARAM_STR);
-// $query-> bindParam(':email', $email, PDO::PARAM_STR);
-// $query-> bindParam(':password', $password, PDO::PARAM_STR);
-$query-> execute(array($email, $password));	
-$results=$query->fetchAll(PDO::FETCH_ASSOC);
-foreach ($results as $key => $value){
-        $id =  $value['id'];
-        $name= $value['FullName'];
-    }
-    $_SESSION['id'] = $id;
-    $_SESSION['name']= $name;
-echo "<script type='text/javascript'> document.location = '../myprofile.php'; </script>";
-if($query->rowCount() > 0)
-{
-$_SESSION['login']=$_POST['email'];
-} else{
-	
-	echo "<script>alert('Invalid Details');</script>";
-}
-}
+	$email=$_POST['email'];
+	$password=md5($_POST['password']);
+	if(empty($email) || empty($password)){
+		return "Please, Enter email and password";
+				}
+	$sql ="SELECT id, FullName, EmailId, Password FROM tblusers WHERE EmailId=? AND Password=?";
+	$query= $this->db->prepare($sql);
+	// $query-> bindParam(':fname', $name, PDO::PARAM_STR);
+	// $query-> bindParam(':email', $email, PDO::PARAM_STR);
+	// $query-> bindParam(':password', $password, PDO::PARAM_STR);
+	$query-> execute(array($email, $password));	
+	$results=$query->fetchAll(PDO::FETCH_ASSOC);
+	foreach ($results as $key => $value){
+	        $id =  $value['id'];
+	        $name= $value['FullName'];
+	    }
+	    $_SESSION['id'] = $id;
+	    $_SESSION['name']= $name;
+	echo "<script type='text/javascript'> document.location = '../myprofile.php'; </script>";
+	if($query->rowCount() > 0)
+	{
+	$_SESSION['login']=$_POST['email'];
+	} else{
+		
+		echo "<script>alert('Invalid Details');</script>";
+	}
+	}
 
 
 
@@ -128,6 +128,30 @@ $_SESSION['login']=$_POST['email'];
     	}
     	
     }
+    // get user record in update page
+    function get_user_record($userid){
+   	$query="SELECT * FROM userprofile WHERE id=? LIMIT 1";
+   	$stmt=$this->db->prepare($query);
+   	$stmt->execute(array($userid));
+   	if($stmt->rowCount()!=1){
+   		return "Invalid Student ID";
+   	}else{
+   	  return $stmt->fetch(PDO::FETCH_OBJ);
+   	}
+   }
+
+   // update user record
+   function updateUser(){
+   	$title=$_POST['title'];
+   	$photos=$_POST['picture'];
+   	$userid=$_POST['userid'];
+	$id=$_SESSION['id'];
+
+   	$query = "UPDATE userprofile SET title=?, photos=? , user_id=? WHERE id=? LIMIT 1";
+   	$stmt=$this->db->prepare($query);
+   	$stmt->execute(array($title, $photos, $id, $userid));
+    return "Profile has been updated Successfully";
+   }
 
 }
 

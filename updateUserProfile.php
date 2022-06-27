@@ -6,17 +6,14 @@ if(isset($_SESSION['login'])==true){
 	header("location:includes/signin.php");
 }
 include('processor/get_processor.php');
-if(isset($_POST['submit'])){
-	$resp=$obj->add_user_profile();
-	if($resp == "ok"){
-    	header("location:myprofile.php");
-
+$resp="";
+if(isset($_POST['update'])){
+	$resp=$obj->updateUser();
 }
-}
-if(isset($_POST['delete'])){
-	$resp=$obj->delete_user_photo();
-}
+$userid=$_GET['userid'];
+$get_user=$obj->get_user_record($userid);
 $user_profile=$obj->show_user_profile();
+
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -35,38 +32,19 @@ $user_profile=$obj->show_user_profile();
 <!-- JavaScript Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 <!-- Custom Theme files -->
-<script src="js/jquery-1.12.0.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
+<!-- <script src="js/bootstrap.min.js"></script> -->
 
 <!-- image magnifier start -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" integrity="sha512-+EoPw+Fiwh6eSeRK7zwIKG2MA8i3rV/DGa3tdttQGgWyatG/SkncT53KHQaS5Jh9MNOT3dmFL0FjTY08And/Cw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <!-- image magnifier end -->
 <!--animate-->
 <!-- hello i am commits -->
 <link href="css/animate.css" rel="stylesheet" type="text/css" media="all">
+<script type="text/javascript" src="js/jquery.min.js"></script>
 <script src="js/wow.min.js"></script>
 	<script>
-		$(document).ready(function(){
-			$('.gallerys').magnificPopup({
-				type:'image',
-				delegate:'a',
-				mainClass: 'mfp-fade',
-
-			      zoom: {
-			    enabled: true, 
-			    duration: 300,
-			    easing: 'ease-in-out'
-			},
-			gallery:{
-				enabled:true
-			}
-			});
-
-
-
-		});
 		 new WOW().init();
 	</script>
 <!--//end-animate-->
@@ -83,7 +61,7 @@ $user_profile=$obj->show_user_profile();
 <div class="banner-3">
 
 	<div class="container">
-		<h1 class="wow zoomIn animated animated" data-wow-delay=".5s" style="visibility: visible; animation-delay: 0.5s; animation-name: zoomIn; text-transform: uppercase; color: #4DB321;">Welcome:<?php echo htmlentities($_SESSION['name']);  ?></h1>
+		<h1 class="wow zoomIn animated animated" data-wow-delay=".5s" style="visibility: visible; animation-delay: 0.5s; animation-name: zoomIn; text-transform: uppercase; color: #4DB321;">Update Profile</h1>
 
 	</div>
 
@@ -97,57 +75,34 @@ $user_profile=$obj->show_user_profile();
 			
 	<div class="privacy">
 	<div class="container">
-		<h3 class="wow fadeInDown animated animated" data-wow-delay=".5s" style="visibility: visible; animation-delay: 0.5s; animation-name: fadeInDown;">Upload Picture</h3>
-		<form method="post">
+		<h3 class="wow fadeInDown animated animated" data-wow-delay=".5s" style="visibility: visible; animation-delay: 0.5s; animation-name: fadeInDown;">Update Profile</h3>
+		<form id="updateUser" method="post" action="updateUserProfile.php?userid=<?php echo $get_user->id; ?>">
+			<p class="text-info"><?php echo $resp; ?></p>
 			<p style="width: 350px;">
-
-			<b>Title</b>  <input type="text" name="title" class="form-control" id="exampleInputTitle" placeholder="Title" required="">
+			<b>Title</b>  <input type="text" id="title" name="title" class="form-control" value="<?php echo $get_user->title; ?>" placeholder="Title" required="required">
 			</p>
 
 			<p style="width: 350px;">
-			<b>Picture</b>
+			<b>Change Image</b>
 			<input type="file" class="form-control" name="picture" required="required">
 			</p>
 
-			<p style="width: 350px;">
-			<input type="submit" name="submit" class="btn-primary btn">
+			<div>
+				<img id="photos" src="images/<?php echo $get_user->photos; ?>" width="200">
+			</div>
 
+			<p style="width: 350px;">
+      <input type="hidden" name="userid" value="<?php echo $userid; ?>">
+			<input type="submit" name="update" value="update" class="btn-primary btn">
 			</p>
 			</form>
+			<a href="myprofile.php" class="fa-solid fa-arrow-left" style="text-decoration:none">  Back to User Profile</a>
 </div>
 </div>
 </div>
-
-       <!-- Gallery -->
-  
-  <div class="container">
-  <h3 class="wow fadeInDown animated animated" data-wow-delay=".5s" style="visibility: visible; animation-delay: 0.5s; animation-name: fadeInDown; margin-bottom: 30px; color: #4DB321;">Gallery</h3>
-   <div class="row">
-   <?php foreach ($user_profile as $key => $value) { ?>
-   	
-   <div class="col-md-4">
-   	<form method="post" action="myprofile.php">
-  	   <input type="hidden" name="userphoto" value="<?php echo $value->id; ?>">
-          <button class="fa-solid fa-trash" type="submit" name="delete" style="position: relative; top: 40px; left: 10px;" onclick="return confirm('Are you sure you want to delete the record')"></button>
-          <button style="position: relative; top: 40px; left: 10px;"><a href="updateUserProfile.php?userid=<?php echo $value->id; ?>" name="userid" class="fa-solid fa-pen-to-square" style="text-decoration: none;"></a></button>
-     </form>
-
-    <div class="border bg-white mb-4 gallerys">
-    <a href="images/<?php echo $value->photos; ?>" style="text-decoration: none;">
-    <img src="images/<?php echo $value->photos; ?>" class="img_fluid img-thumbnail" alt="image missing" width="100%">
-    </a>
-    <!-- <div class="caption mt-4 mb-4 text-center">
-    <h4>Title</h4>
-    <p style="color: #6C757D;"><?php echo $value->title; ?></p>
-    </div> -->
-    </div>
-    </div>
-   	<?php } ?>
-    </div>
-
-  </div>
 </div>		
 </div>
+
 <!--- /footer-top ---->
 <?php include('includes/footer.php');?>
 <!-- write us -->
